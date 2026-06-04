@@ -52,6 +52,9 @@ public class SkillPipeline {
     @OneToMany(mappedBy = "pipeline", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PipelineEdge> edges = new ArrayList<>();
 
+    @Column(name = "input_definitions", columnDefinition = "jsonb")
+    private String inputDefinitions;  // JSON-serialized SkillManifest.InputSpec for pipeline params
+
     @PrePersist
     void onCreate() { createdAt = Instant.now(); updatedAt = Instant.now(); }
 
@@ -93,4 +96,6 @@ public class SkillPipeline {
     public void setNodes(List<PipelineNode> n) { this.nodes = n; }
     public List<PipelineEdge> getEdges() { return edges; }
     public void setEdges(List<PipelineEdge> e) { this.edges = e; }
+    public String getInputDefinitions() { return inputDefinitions; }
+    public void setInputDefinitions(String v) { this.inputDefinitions = v; }
 }

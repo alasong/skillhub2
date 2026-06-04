@@ -9,20 +9,19 @@ import java.util.*;
 /**
  * /api/v2/pipelines — Skill orchestration (DAG pipeline) endpoints.
  * v2 API: versioned, RESTful, consistent error format, HATEOAS links.
- *
- * @deprecated Prototype — uses in-memory store, migrate to PipelineService before production
  */
-@Deprecated
 @RestController
 @RequestMapping("/api/v2/pipelines")
 public class SkillPipelineController {
 
-    // TODO: inject PipelineService when implemented
-    private final Map<UUID, SkillPipeline> store = new LinkedHashMap<>();
+    private final PipelineService pipelineService;
+
+    public SkillPipelineController(PipelineService pipelineService) {
+        this.pipelineService = pipelineService;
+    }
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> createPipeline(@RequestBody Map<String, Object> body) {
-        // TODO: Replace with CreatePipelineRequest DTO when PipelineService is implemented
         SkillPipeline pipeline = new SkillPipeline();
         pipeline.setId(UUID.randomUUID());
         pipeline.setName((String) body.get("name"));
@@ -30,27 +29,27 @@ public class SkillPipelineController {
         pipeline.setNamespace((String) body.get("namespace"));
         pipeline.setOwnerId((String) body.get("ownerId"));
         pipeline.setDescription((String) body.get("description"));
-        if (body.containsKey("visibility")) {
-            pipeline.setVisibility((String) body.get("visibility"));
+        if (body.containsKey("visibility") && body.get("visibility") != null) {
+            pipeline.setVisibility(PipelineNode.Visibility.valueOf((String) body.get("visibility")));
         }
-        store.put(pipeline.getId(), pipeline);
+        SkillPipeline saved = pipelineService.save(pipeline);
         return ResponseEntity.status(201).body(Map.of(
                 "status", "CREATED",
-                "id", pipeline.getId().toString(),
-                "links", Map.of("self", "/api/v2/pipelines/" + pipeline.getId())
+                "id", saved.getId().toString(),
+                "links", Map.of("self", "/api/v2/pipelines/" + saved.getId())
         ));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getPipeline(@PathVariable UUID id) {
-        SkillPipeline p = store.get(id);
-        if (p == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(p);
+        return pipelineService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/{id}/execute")
     public ResponseEntity<Map<String, Object>> executePipeline(@PathVariable UUID id) {
-        SkillPipeline p = store.get(id);
+        SkillPipeline p = pipelineService.findById(id).orElse(null);
         if (p == null) return ResponseEntity.notFound().build();
         // TODO: actual execution engine
         return ResponseEntity.accepted()
