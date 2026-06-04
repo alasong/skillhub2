@@ -22,8 +22,9 @@ public class PipelineEdge {
     @Column(name = "target_node_id", nullable = false, length = 64)
     private String targetNodeId;
 
+    @Convert(converter = DataMapping.JpaConverter.class)
     @Column(name = "data_mapping", columnDefinition = "jsonb")
-    private String dataMapping;  // JSON path mapping: {"source.output.field": "target.input.field"}
+    private DataMapping dataMapping = new DataMapping();
 
     @Column(name = "condition_expr", length = 512)
     private String conditionExpr;  // edge is only traversed if condition is met
@@ -51,8 +52,8 @@ public class PipelineEdge {
     public void setSourceNodeId(String s) { this.sourceNodeId = s; }
     public String getTargetNodeId() { return targetNodeId; }
     public void setTargetNodeId(String t) { this.targetNodeId = t; }
-    public String getDataMapping() { return dataMapping; }
-    public void setDataMapping(String d) { this.dataMapping = d; }
+    public DataMapping getDataMapping() { return dataMapping; }
+    public void setDataMapping(DataMapping d) { this.dataMapping = d; }
     public String getConditionExpr() { return conditionExpr; }
     public void setConditionExpr(String c) { this.conditionExpr = c; }
 }

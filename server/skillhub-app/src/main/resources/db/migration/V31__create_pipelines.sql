@@ -53,3 +53,18 @@ CREATE TABLE IF NOT EXISTS webhook_configs (
 
 CREATE INDEX IF NOT EXISTS idx_webhook_namespace ON webhook_configs (namespace, enabled);
 CREATE INDEX IF NOT EXISTS idx_pipeline_namespace ON skill_pipelines (namespace);
+
+-- Edge referential integrity: source and target must reference real nodes
+DO $$ BEGIN
+    ALTER TABLE pipeline_edges
+        ADD CONSTRAINT fk_edge_source FOREIGN KEY (pipeline_id, source_node_id)
+        REFERENCES pipeline_nodes (pipeline_id, node_id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+    ALTER TABLE pipeline_edges
+        ADD CONSTRAINT fk_edge_target FOREIGN KEY (pipeline_id, target_node_id)
+        REFERENCES pipeline_nodes (pipeline_id, node_id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;

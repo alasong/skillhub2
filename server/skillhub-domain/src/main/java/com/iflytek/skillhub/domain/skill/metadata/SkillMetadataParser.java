@@ -7,9 +7,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Parses `SKILL.md` frontmatter and body content into the normalized metadata model used by the
- * publish pipeline.
+ * Parses legacy {@code SKILL.md} YAML frontmatter for backward compatibility.
+ *
+ * @deprecated Use {@link SkillManifestParser} for the v2 {@code skill.yaml} format.
+ *             This parser only handles flat key-value frontmatter and will silently
+ *             produce incorrect results for nested v2 manifest structures.
  */
+@Deprecated
 public class SkillMetadataParser {
 
     private static final String FRONTMATTER_DELIMITER = "---";

@@ -44,8 +44,9 @@ public class PipelineNode {
     @Column(name = "timeout_seconds")
     private int timeoutSeconds = 300;
 
+    @Convert(converter = ParameterMapping.JpaConverter.class)
     @Column(name = "parameter_mapping", columnDefinition = "jsonb")
-    private String parameterMapping;  // JSON: {"input_key": "$.prev.output.field"}
+    private ParameterMapping parameterMapping = new ParameterMapping();
 
     @Override
     public boolean equals(Object o) {
@@ -82,8 +83,8 @@ public class PipelineNode {
     public void setRetryCount(int r) { this.retryCount = r; }
     public int getTimeoutSeconds() { return timeoutSeconds; }
     public void setTimeoutSeconds(int t) { this.timeoutSeconds = t; }
-    public String getParameterMapping() { return parameterMapping; }
-    public void setParameterMapping(String p) { this.parameterMapping = p; }
+    public ParameterMapping getParameterMapping() { return parameterMapping; }
+    public void setParameterMapping(ParameterMapping p) { this.parameterMapping = p; }
 
     public enum FailureStrategy { STOP, RETRY, CONTINUE, FALLBACK }
     public enum Visibility { PUBLIC, NAMESPACE_ONLY, PRIVATE }
