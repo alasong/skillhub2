@@ -9,7 +9,10 @@ import java.util.*;
 /**
  * /api/v2/pipelines — Skill orchestration (DAG pipeline) endpoints.
  * v2 API: versioned, RESTful, consistent error format, HATEOAS links.
+ *
+ * @deprecated Prototype — uses in-memory store, migrate to PipelineService before production
  */
+@Deprecated
 @RestController
 @RequestMapping("/api/v2/pipelines")
 public class SkillPipelineController {
@@ -18,8 +21,18 @@ public class SkillPipelineController {
     private final Map<UUID, SkillPipeline> store = new LinkedHashMap<>();
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createPipeline(@RequestBody SkillPipeline pipeline) {
+    public ResponseEntity<Map<String, Object>> createPipeline(@RequestBody Map<String, Object> body) {
+        // TODO: Replace with CreatePipelineRequest DTO when PipelineService is implemented
+        SkillPipeline pipeline = new SkillPipeline();
         pipeline.setId(UUID.randomUUID());
+        pipeline.setName((String) body.get("name"));
+        pipeline.setVersion((String) body.get("version"));
+        pipeline.setNamespace((String) body.get("namespace"));
+        pipeline.setOwnerId((String) body.get("ownerId"));
+        pipeline.setDescription((String) body.get("description"));
+        if (body.containsKey("visibility")) {
+            pipeline.setVisibility((String) body.get("visibility"));
+        }
         store.put(pipeline.getId(), pipeline);
         return ResponseEntity.status(201).body(Map.of(
                 "status", "CREATED",
@@ -40,7 +53,9 @@ public class SkillPipelineController {
         SkillPipeline p = store.get(id);
         if (p == null) return ResponseEntity.notFound().build();
         // TODO: actual execution engine
-        return ResponseEntity.accepted().body(Map.of(
+        return ResponseEntity.accepted()
+                .header("X-Mock", "true")
+                .body(Map.of(
                 "status", "ACCEPTED",
                 "pipelineId", id.toString(),
                 "executionId", UUID.randomUUID().toString()
@@ -50,7 +65,9 @@ public class SkillPipelineController {
     @GetMapping("/{id}/executions/{execId}")
     public ResponseEntity<Map<String, Object>> getExecution(
             @PathVariable UUID id, @PathVariable String execId) {
-        return ResponseEntity.ok(Map.of(
+        return ResponseEntity.ok()
+                .header("X-Mock", "true")
+                .body(Map.of(
                 "executionId", execId,
                 "pipelineId", id.toString(),
                 "status", "RUNNING",

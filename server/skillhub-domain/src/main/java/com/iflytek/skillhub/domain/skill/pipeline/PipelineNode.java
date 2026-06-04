@@ -1,6 +1,7 @@
 package com.iflytek.skillhub.domain.skill.pipeline;
 
 import jakarta.persistence.*;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -31,7 +32,8 @@ public class PipelineNode {
     private String conditionExpr;  // "prev.exitCode == 0" | "inputs.mode == 'prod'"
 
     @Column(name = "on_failure", length = 16)
-    private String onFailure = "STOP";  // STOP | RETRY | CONTINUE | FALLBACK
+    @Enumerated(EnumType.STRING)
+    private FailureStrategy onFailure = FailureStrategy.STOP;
 
     @Column(name = "on_failure_fallback_skill", length = 128)
     private String onFailureFallbackSkill;
@@ -44,6 +46,19 @@ public class PipelineNode {
 
     @Column(name = "parameter_mapping", columnDefinition = "jsonb")
     private String parameterMapping;  // JSON: {"input_key": "$.prev.output.field"}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PipelineNode that = (PipelineNode) o;
+        return Objects.equals(pipeline, that.pipeline) && Objects.equals(nodeId, that.nodeId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pipeline, nodeId);
+    }
 
     // Getters/setters
     public UUID getId() { return id; }
@@ -59,8 +74,8 @@ public class PipelineNode {
     public void setOrderIndex(int o) { this.orderIndex = o; }
     public String getConditionExpr() { return conditionExpr; }
     public void setConditionExpr(String c) { this.conditionExpr = c; }
-    public String getOnFailure() { return onFailure; }
-    public void setOnFailure(String o) { this.onFailure = o; }
+    public FailureStrategy getOnFailure() { return onFailure; }
+    public void setOnFailure(FailureStrategy o) { this.onFailure = o; }
     public String getOnFailureFallbackSkill() { return onFailureFallbackSkill; }
     public void setOnFailureFallbackSkill(String f) { this.onFailureFallbackSkill = f; }
     public int getRetryCount() { return retryCount; }
@@ -69,4 +84,7 @@ public class PipelineNode {
     public void setTimeoutSeconds(int t) { this.timeoutSeconds = t; }
     public String getParameterMapping() { return parameterMapping; }
     public void setParameterMapping(String p) { this.parameterMapping = p; }
+
+    public enum FailureStrategy { STOP, RETRY, CONTINUE, FALLBACK }
+    public enum Visibility { PUBLIC, NAMESPACE_ONLY, PRIVATE }
 }

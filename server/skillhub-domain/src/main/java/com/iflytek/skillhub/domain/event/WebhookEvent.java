@@ -11,6 +11,7 @@ import java.util.UUID;
 public class WebhookEvent {
 
     // CloudEvents fields
+    private String specversion = "1.0";
     private String id = UUID.randomUUID().toString();
     private String source;
     private String type;
@@ -43,6 +44,7 @@ public class WebhookEvent {
     public static final String PIPELINE_FAILED = "pipeline.failed";
 
     // Getters/setters
+    public String getSpecversion() { return specversion; }
     public String getId() { return id; }
     public String getSource() { return source; }
     public void setSource(String s) { this.source = s; }

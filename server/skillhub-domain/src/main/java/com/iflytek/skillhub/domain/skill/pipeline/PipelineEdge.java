@@ -1,6 +1,7 @@
 package com.iflytek.skillhub.domain.skill.pipeline;
 
 import jakarta.persistence.*;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -26,6 +27,21 @@ public class PipelineEdge {
 
     @Column(name = "condition_expr", length = 512)
     private String conditionExpr;  // edge is only traversed if condition is met
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PipelineEdge that = (PipelineEdge) o;
+        return Objects.equals(pipeline, that.pipeline)
+                && Objects.equals(sourceNodeId, that.sourceNodeId)
+                && Objects.equals(targetNodeId, that.targetNodeId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pipeline, sourceNodeId, targetNodeId);
+    }
 
     // Getters/setters
     public UUID getId() { return id; }

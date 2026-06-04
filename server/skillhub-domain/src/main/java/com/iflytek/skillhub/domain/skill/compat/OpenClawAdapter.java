@@ -1,11 +1,14 @@
 package com.iflytek.skillhub.domain.skill.compat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
 public class OpenClawAdapter implements AgentPlatformAdapter {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public String platformId() { return "openclaw"; }
@@ -28,14 +31,6 @@ public class OpenClawAdapter implements AgentPlatformAdapter {
     }
 
     private String toJson(Map<String, Object> map) {
-        StringBuilder sb = new StringBuilder("{");
-        map.forEach((k, v) -> {
-            if (sb.length() > 1) sb.append(", ");
-            sb.append("\"").append(k).append("\": ");
-            if (v instanceof String) sb.append("\"").append(v).append("\"");
-            else sb.append(v);
-        });
-        sb.append("}");
-        return sb.toString();
+        try { return objectMapper.writeValueAsString(map); } catch (Exception e) { return "{}"; }
     }
 }

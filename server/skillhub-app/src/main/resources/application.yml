@@ -193,7 +193,6 @@ skillhub:
       reclaim-min-idle: ${SKILLHUB_SCAN_STREAM_RECLAIM_MIN_IDLE:PT2M}
       reclaim-batch-size: ${SKILLHUB_SCAN_STREAM_RECLAIM_BATCH_SIZE:20}
       reclaim-interval: ${SKILLHUB_SCAN_STREAM_RECLAIM_INTERVAL:PT30S}
-  security:
     scan-gate:
       enabled: ${SECURITY_SCAN_GATE_ENABLED:true}
       require-passing-report: ${SECURITY_SCAN_GATE_REQUIRE_REPORT:true}

@@ -80,7 +80,7 @@ public class SkillManifest {
     }
 
     public static class ParameterSpec {
-        private String type;        // string | number | boolean | array | object | file
+        private ParamType type;        // string | number | boolean | array | object | file
         private String description;
         private Object defaultVal;
         private List<Object> enumValues;
@@ -89,8 +89,8 @@ public class SkillManifest {
         private Number maximum;
         private String jsonSchema;  // full JSON Schema override
 
-        public String getType() { return type; }
-        public void setType(String type) { this.type = type; }
+        public ParamType getType() { return type; }
+        public void setType(ParamType type) { this.type = type; }
         public String getDescription() { return description; }
         public void setDescription(String d) { this.description = d; }
         public Object getDefaultVal() { return defaultVal; }
@@ -108,12 +108,12 @@ public class SkillManifest {
     }
 
     public static class OutputSpec {
-        private String type;         // json | text | stream | file | void
+        private OutputType type;         // json | text | stream | file | void
         private String jsonSchema;   // JSON Schema for structured output
         private List<OutputExample> examples;
 
-        public String getType() { return type; }
-        public void setType(String t) { this.type = t; }
+        public OutputType getType() { return type; }
+        public void setType(OutputType t) { this.type = t; }
         public String getJsonSchema() { return jsonSchema; }
         public void setJsonSchema(String s) { this.jsonSchema = s; }
         public List<OutputExample> getExamples() { return examples; }
@@ -154,7 +154,7 @@ public class SkillManifest {
         public String getOnInstall() { return onInstall; }
         public void setOnInstall(String o) { this.onInstall = o; }
         public String getOnUpgrade() { return onUpgrade; }
-        public void setUpgrade(String o) { this.onUpgrade = o; }
+        public void setOnUpgrade(String o) { this.onUpgrade = o; }
         public String getOnUninstall() { return onUninstall; }
         public void setOnUninstall(String o) { this.onUninstall = o; }
         public String getHealthCheck() { return healthCheck; }
@@ -181,7 +181,7 @@ public class SkillManifest {
         private String name;
         private Map<String, Object> input;
         private Object expectedOutput;
-        private String validator;  // "exact" | "contains" | "jsonSchema" | "llmJudge"
+        private ValidatorType validator;  // "exact" | "contains" | "jsonSchema" | "llmJudge"
 
         public String getName() { return name; }
         public void setName(String n) { this.name = n; }
@@ -189,7 +189,11 @@ public class SkillManifest {
         public void setInput(Map<String, Object> i) { this.input = i; }
         public Object getExpectedOutput() { return expectedOutput; }
         public void setExpectedOutput(Object e) { this.expectedOutput = e; }
-        public String getValidator() { return validator; }
-        public void setValidator(String v) { this.validator = v; }
+        public ValidatorType getValidator() { return validator; }
+        public void setValidator(ValidatorType v) { this.validator = v; }
     }
+
+    public enum OutputType { JSON, TEXT, STREAM, FILE, VOID }
+    public enum ParamType { STRING, NUMBER, BOOLEAN, ARRAY, OBJECT, FILE }
+    public enum ValidatorType { EXACT, CONTAINS, JSON_SCHEMA, LLM_JUDGE }
 }

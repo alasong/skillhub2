@@ -1,13 +1,16 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE IF NOT EXISTS skill_pipelines (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name        VARCHAR(128) NOT NULL UNIQUE,
+    name        VARCHAR(128) NOT NULL,
     version     VARCHAR(16) NOT NULL DEFAULT '0.1.0',
     description VARCHAR(1024),
     namespace   VARCHAR(64) NOT NULL,
     owner_id    VARCHAR(128) NOT NULL,
     visibility  VARCHAR(16) NOT NULL DEFAULT 'NAMESPACE_ONLY',
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (namespace, name)
 );
 
 CREATE TABLE IF NOT EXISTS pipeline_nodes (

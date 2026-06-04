@@ -19,7 +19,6 @@ nodes:
   - id: static-analysis
     skill: code-scanner
     version: "^2.0"
-    dependsOn: [validate]
     conditionExpr: "$.validate.output.valid == true"
     onFailure: CONTINUE
     retryCount: 1
@@ -30,7 +29,6 @@ nodes:
   - id: integration-test
     skill: test-runner
     version: "^1.5"
-    dependsOn: [validate]
     conditionExpr: "$.validate.output.valid == true"
     onFailure: RETRY
     retryCount: 2
@@ -42,7 +40,6 @@ nodes:
   - id: report
     skill: report-generator
     version: "^1.0"
-    dependsOn: [static-analysis, integration-test]
     onFailure: CONTINUE
     parameterMapping:
       scanResults: "$.static-analysis.output.findings"

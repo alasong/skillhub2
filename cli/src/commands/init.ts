@@ -95,14 +95,12 @@ nodes:
     onFailure: STOP
   - id: process
     skill: text-processor
-    dependsOn: [validate]
     parameterMapping:
       text: "$.validate.output.validatedText"
     onFailure: RETRY
     retryCount: 2
   - id: format
     skill: output-formatter
-    dependsOn: [process]
     parameterMapping:
       raw: "$.process.output.result"
     onFailure: CONTINUE
@@ -120,7 +118,7 @@ export async function initCommand() {
   console.log('skillhub init — scaffold a new skill\n');
 
   const name = await input({ message: 'Skill name (lowercase, dashes):', validate: (v: string) =>
-    /^[a-z0-9][a-z0-9._-]+$/.test(v) || 'Invalid name — use lowercase, digits, dots, dashes'
+    /^[a-z0-9][a-z0-9._-]*$/.test(v) || 'Invalid name — use lowercase, digits, dots, dashes'
   });
 
   const template = await select({

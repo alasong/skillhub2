@@ -21,8 +21,8 @@ public class WebhookConfig {
     @Column(name = "secret_hash", length = 128)
     private String secretHash;  // HMAC-SHA256 shared secret for signature verification
 
-    @Column(name = "events", nullable = false, columnDefinition = "text[]")
-    private String events;  // comma-separated: "publish,deprecate,review"
+    @Column(name = "events", nullable = false, columnDefinition = "TEXT")
+    private String events;  // Comma-separated event types: publish,deprecate,review,etc.
 
     @Column(name = "enabled", nullable = false)
     private boolean enabled = true;
