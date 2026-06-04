@@ -1,0 +1,102 @@
+name: Skill Security Scan
+on:
+  pull_request:
+    paths: ["skills/**"]
+  push:
+    branches: [main]
+    paths: ["skills/**"]
+  workflow_dispatch:
+    inputs:
+      skill_name:
+        description: "Skill to scan and publish"
+        required: false
+      skill_version:
+        description: "Version to publish (requires --publish)"
+        required: false
+      publish:
+        description: "Upload scan report to skillhub"
+        required: false
+        default: "false"
+
+env:
+  TRIVY_VERSION: 0.52.0
+  SEMGREP_VERSION: 1.70.0
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    outputs:
+      gate_passed: ${{ steps.gate.outputs.passed }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Semgrep SAST Scan
+        id: semgrep
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/default
+          output-format: sarif
+          sarif-file: reports/semgrep.sarif
+        continue-on-error: true
+
+      - name: truffleHog Secrets Scan
+        id: trufflehog
+        uses: trufflesecurity/trufflehog-action@v3
+        with:
+          path: ./skills/
+          extra_args: --only-verified --json --output reports/trufflehog.json
+        continue-on-error: true
+
+      - name: Trivy CVE Scanner
+        id: trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: ./skills/
+          format: sarif
+          output: reports/trivy.sarif
+          severity: CRITICAL,HIGH
+          exit-code: 1
+        continue-on-error: true
+
+      - name: OPA Policy Gate
+        id: gate
+        uses: open-policy-agent/setup-opa@v2
+        with:
+          version: latest
+      - name: Evaluate Gate
+        run: |
+          opa eval --format pretty \
+            --data policy/gate.rego \
+            --input reports/aggregated-report.json \
+            'data.skillhub.gate.allow' > gate_result.txt
+          echo "passed=$(grep -q true gate_result.txt && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Cosign Sign (publish builds only)
+        if: github.ref == 'refs/heads/main' || inputs.publish == 'true'
+        run: |
+          if [ -n "${{ inputs.skill_name }}" ]; then
+            skill_path="skills/${{ inputs.skill_name }}"
+            cosign sign-blob \
+              --oidc-issuer https://token.actions.githubusercontent.com \
+              --tlog-upload=true \
+              --output-signature "reports/${{ inputs.skill_name }}.sig" \
+              --output-certificate "reports/${{ inputs.skill_name }}.crt" \
+              "$skill_path"
+          fi
+
+      - name: Upload Scan Report to SkillHub
+        if: inputs.publish == 'true'
+        run: |
+          curl -s -X POST \
+            "${{ secrets.SKILLHUB_URL }}/api/v1/skills/${{ inputs.skill_name }}/versions/${{ inputs.skill_version }}/scan-report" \
+            -H "Authorization: Bearer ${{ secrets.SKILLHUB_API_TOKEN }}" \
+            -H "Content-Type: multipart/form-data" \
+            -F "report=@reports/aggregated-report.json" \
+            -F "signature=@reports/${{ inputs.skill_name }}.sig" \
+            -F "certificate=@reports/${{ inputs.skill_name }}.crt"
