@@ -19,7 +19,6 @@ import com.iflytek.skillhub.domain.skill.SkillVersion;
 import com.iflytek.skillhub.domain.skill.SkillVisibility;
 import com.iflytek.skillhub.domain.skill.service.SkillPublishService;
 import com.iflytek.skillhub.domain.skill.service.SkillQueryService;
-import com.iflytek.skillhub.domain.social.SkillStarService;
 import com.iflytek.skillhub.dto.SkillSummaryResponse;
 import com.iflytek.skillhub.service.SkillSearchAppService;
 import java.io.IOException;
@@ -48,7 +47,6 @@ public class ClawHubCompatAppService {
     private final MultipartPackageExtractor multipartPackageExtractor;
     private final AuditLogService auditLogService;
     private final CompatSkillLookupService compatSkillLookupService;
-    private final SkillStarService skillStarService;
 
     public ClawHubCompatAppService(CanonicalSlugMapper mapper,
                                    SkillSearchAppService skillSearchAppService,
@@ -57,8 +55,7 @@ public class ClawHubCompatAppService {
                                    ZipPackageExtractor zipPackageExtractor,
                                    MultipartPackageExtractor multipartPackageExtractor,
                                    AuditLogService auditLogService,
-                                   CompatSkillLookupService compatSkillLookupService,
-                                   SkillStarService skillStarService) {
+                                   CompatSkillLookupService compatSkillLookupService) {
         this.mapper = mapper;
         this.skillSearchAppService = skillSearchAppService;
         this.skillQueryService = skillQueryService;
@@ -67,7 +64,6 @@ public class ClawHubCompatAppService {
         this.multipartPackageExtractor = multipartPackageExtractor;
         this.auditLogService = auditLogService;
         this.compatSkillLookupService = compatSkillLookupService;
-        this.skillStarService = skillStarService;
     }
 
     public ClawHubSearchResponse search(String q,
@@ -261,29 +257,11 @@ public class ClawHubCompatAppService {
     }
 
     public ClawHubStarResponse starSkill(String canonicalSlug, PlatformPrincipal principal) {
-        SkillCoordinate coord = mapper.fromCanonical(canonicalSlug);
-        CompatSkillLookupService.CompatSkillContext context = compatSkillLookupService.resolveVisible(
-                coord.namespace(),
-                coord.slug(),
-                principal.userId()
-        );
-
-        boolean alreadyStarred = skillStarService.isStarred(context.skill().getId(), principal.userId());
-        skillStarService.star(context.skill().getId(), principal.userId());
-        return new ClawHubStarResponse(true, alreadyStarred);
+        return new ClawHubStarResponse(false, false);
     }
 
     public ClawHubUnstarResponse unstarSkill(String canonicalSlug, PlatformPrincipal principal) {
-        SkillCoordinate coord = mapper.fromCanonical(canonicalSlug);
-        CompatSkillLookupService.CompatSkillContext context = compatSkillLookupService.resolveVisible(
-                coord.namespace(),
-                coord.slug(),
-                principal.userId()
-        );
-
-        boolean alreadyUnstarred = !skillStarService.isStarred(context.skill().getId(), principal.userId());
-        skillStarService.unstar(context.skill().getId(), principal.userId());
-        return new ClawHubUnstarResponse(true, alreadyUnstarred);
+        return new ClawHubUnstarResponse(false, true);
     }
 
     public ClawHubPublishResponse publishSkill(String payloadJson,

@@ -15,8 +15,6 @@ import com.iflytek.skillhub.domain.skill.SkillTagRepository;
 import com.iflytek.skillhub.domain.skill.SkillVersion;
 import com.iflytek.skillhub.domain.skill.SkillVersionRepository;
 import com.iflytek.skillhub.domain.skill.SkillVersionStatsRepository;
-import com.iflytek.skillhub.domain.social.SkillRatingRepository;
-import com.iflytek.skillhub.domain.social.SkillStarRepository;
 import com.iflytek.skillhub.storage.ObjectStorageService;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
@@ -44,8 +42,6 @@ public class SkillHardDeleteService {
     private final SkillTagRepository skillTagRepository;
     private final ReviewTaskRepository reviewTaskRepository;
     private final PromotionRequestRepository promotionRequestRepository;
-    private final SkillStarRepository skillStarRepository;
-    private final SkillRatingRepository skillRatingRepository;
     private final SkillReportRepository skillReportRepository;
     private final SkillVersionStatsRepository skillVersionStatsRepository;
     private final ObjectStorageService objectStorageService;
@@ -60,8 +56,6 @@ public class SkillHardDeleteService {
                                   SkillTagRepository skillTagRepository,
                                   ReviewTaskRepository reviewTaskRepository,
                                   PromotionRequestRepository promotionRequestRepository,
-                                  SkillStarRepository skillStarRepository,
-                                  SkillRatingRepository skillRatingRepository,
                                   SkillReportRepository skillReportRepository,
                                   SkillVersionStatsRepository skillVersionStatsRepository,
                                   ObjectStorageService objectStorageService,
@@ -75,8 +69,6 @@ public class SkillHardDeleteService {
         this.skillTagRepository = skillTagRepository;
         this.reviewTaskRepository = reviewTaskRepository;
         this.promotionRequestRepository = promotionRequestRepository;
-        this.skillStarRepository = skillStarRepository;
-        this.skillRatingRepository = skillRatingRepository;
         this.skillReportRepository = skillReportRepository;
         this.skillVersionStatsRepository = skillVersionStatsRepository;
         this.objectStorageService = objectStorageService;
@@ -112,8 +104,6 @@ public class SkillHardDeleteService {
         }
         promotionRequestRepository.deleteBySourceSkillIdOrTargetSkillId(skill.getId(), skill.getId());
         skillTagRepository.deleteBySkillId(skill.getId());
-        skillStarRepository.deleteBySkillId(skill.getId());
-        skillRatingRepository.deleteBySkillId(skill.getId());
         skillReportRepository.deleteBySkillId(skill.getId());
         skillVersionStatsRepository.deleteBySkillId(skill.getId());
 
