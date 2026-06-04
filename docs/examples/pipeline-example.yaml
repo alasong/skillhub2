@@ -1,0 +1,69 @@
+# Example: CI-like pipeline for skill quality assurance
+# This pipeline chains 3 skills: validate -> test -> report
+# Analogous to GitHub Actions but defined as skillhub-native DAG.
+
+name: skill-qa-pipeline
+version: 1.0.0
+description: "Validate, test, and report on a skill package before publishing"
+kind: pipeline
+
+nodes:
+  - id: validate
+    skill: skill-validator
+    version: "^1.0"
+    onFailure: STOP
+    timeoutSeconds: 120
+    parameterMapping:
+      skillPath: "$.pipeline.inputs.skillPath"
+
+  - id: static-analysis
+    skill: code-scanner
+    version: "^2.0"
+    dependsOn: [validate]
+    conditionExpr: "$.validate.output.valid == true"
+    onFailure: CONTINUE
+    retryCount: 1
+    parameterMapping:
+      sourceDir: "$.pipeline.inputs.skillPath"
+      ruleset: "enterprise-strict"
+
+  - id: integration-test
+    skill: test-runner
+    version: "^1.5"
+    dependsOn: [validate]
+    conditionExpr: "$.validate.output.valid == true"
+    onFailure: RETRY
+    retryCount: 2
+    timeoutSeconds: 600
+    parameterMapping:
+      testSuite: "$.validate.output.detectedTests"
+      environment: "staging"
+
+  - id: report
+    skill: report-generator
+    version: "^1.0"
+    dependsOn: [static-analysis, integration-test]
+    onFailure: CONTINUE
+    parameterMapping:
+      scanResults: "$.static-analysis.output.findings"
+      testResults: "$.integration-test.output.summary"
+      format: "html"
+
+edges:
+  - source: validate
+    target: static-analysis
+    condition: "$.validate.output.valid == true"
+
+  - source: validate
+    target: integration-test
+    condition: "$.validate.output.valid == true"
+
+  - source: static-analysis
+    target: report
+    dataMapping:
+      "findings": "scanResults"
+
+  - source: integration-test
+    target: report
+    dataMapping:
+      "summary": "testResults"

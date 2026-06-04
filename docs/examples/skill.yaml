@@ -1,0 +1,94 @@
+# Example skill.yaml — the canonical skill manifest
+# This is the structured, machine-readable interface for every skill in the registry.
+# Replaces free-form skill.md with standardised inputs/outputs/constraints.
+
+name: pdf-analyzer
+version: 1.0.0
+description: "Extract text, tables, and metadata from PDF documents with optional LLM summarization"
+authors: ["ai-platform-team@company.com"]
+license: Apache-2.0
+keywords: ["pdf", "document", "extraction", "summarization"]
+agentPlatforms: ["claude-code", "openclaw"]
+
+# --- Interface Contract ---
+inputs:
+  parameters:
+    file_path:
+      type: string
+      description: "Path to the PDF file to analyze"
+    mode:
+      type: string
+      description: "Extraction mode"
+      default: "full"
+      enumValues: ["text-only", "tables", "full", "summary"]
+    max_pages:
+      type: number
+      description: "Maximum pages to process (0 = all)"
+      default: 0
+      minimum: 0
+      maximum: 500
+  required: ["file_path"]
+
+outputs:
+  type: json
+  jsonSchema: >
+    {
+      "type": "object",
+      "properties": {
+        "text": {"type": "string"},
+        "tables": {"type": "array"},
+        "metadata": {"type": "object"},
+        "summary": {"type": "string"}
+      }
+    }
+  examples:
+    - description: "Full extraction from a 3-page PDF"
+      value:
+        text: "Page 1 content...\nPage 2 content...\nPage 3 content..."
+        tables: [{"headers": ["Name", "Value"], "rows": [["Total", "42"]]}]
+        metadata: {"title": "Q4 Report", "author": "Finance", "pages": 3}
+
+# --- Runtime Constraints ---
+resources:
+  maxTokens: 8192
+  timeoutSeconds: 60
+  maxRetries: 3
+  requiredTool: "file_read"
+
+# --- Composition ---
+dependencies:
+  text-normalizer: "^1.0"
+  table-extractor: ">=2.0 <3.0"
+
+# --- Lifecycle ---
+lifecycle:
+  onInstall: "pip install -r requirements.txt"
+  healthCheck: "python -c 'import pdf_analyzer; print(\"ok\")'"
+
+# --- Quality Gate ---
+eval:
+  framework: pass@k
+  k: 1
+  minPassRate: 80
+  cases:
+    - name: "basic_text_extraction"
+      input:
+        file_path: "test/fixtures/sample.pdf"
+        mode: "text-only"
+      expectedOutput:
+        text: "Lorem ipsum dolor sit amet"
+      validator: "contains"
+    - name: "table_detection"
+      input:
+        file_path: "test/fixtures/table.pdf"
+        mode: "tables"
+      expectedOutput:
+        tables: [{"headers": ["Name"]}]
+      validator: "jsonSchema"
+    - name: "empty_pdf"
+      input:
+        file_path: "test/fixtures/empty.pdf"
+        mode: "full"
+      expectedOutput:
+        text: ""
+      validator: "exact"
