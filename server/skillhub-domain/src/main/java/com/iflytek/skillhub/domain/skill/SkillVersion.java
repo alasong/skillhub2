@@ -3,6 +3,7 @@ package com.iflytek.skillhub.domain.skill;
 import jakarta.persistence.*;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -53,6 +54,19 @@ public class SkillVersion {
 
     @Column(name = "download_ready", nullable = false)
     private boolean downloadReady;
+
+    @Column(name = "compatible_with", length = 64)
+    private String compatibleWith;
+
+    @Column(name = "deprecated", nullable = false)
+    private boolean deprecated;
+
+    @Column(name = "deprecation_message", length = 512)
+    private String deprecationMessage;
+
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "replaces", columnDefinition = "TEXT[]")
+    private List<String> replaces;
 
     @Column(name = "yanked_at")
     private Instant yankedAt;
@@ -141,6 +155,22 @@ public class SkillVersion {
         return yankedAt;
     }
 
+    public String getCompatibleWith() {
+        return compatibleWith;
+    }
+
+    public boolean isDeprecated() {
+        return deprecated;
+    }
+
+    public String getDeprecationMessage() {
+        return deprecationMessage;
+    }
+
+    public List<String> getReplaces() {
+        return replaces;
+    }
+
     public String getYankedBy() {
         return yankedBy;
     }
@@ -200,6 +230,22 @@ public class SkillVersion {
 
     public void setYankedAt(Instant yankedAt) {
         this.yankedAt = yankedAt;
+    }
+
+    public void setCompatibleWith(String compatibleWith) {
+        this.compatibleWith = compatibleWith;
+    }
+
+    public void setDeprecated(boolean deprecated) {
+        this.deprecated = deprecated;
+    }
+
+    public void setDeprecationMessage(String deprecationMessage) {
+        this.deprecationMessage = deprecationMessage;
+    }
+
+    public void setReplaces(List<String> replaces) {
+        this.replaces = replaces;
     }
 
     public void setYankedBy(String yankedBy) {

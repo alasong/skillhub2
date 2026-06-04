@@ -39,6 +39,29 @@ public class SkillManifest {
     // --- Quality gates ---
     private EvalSpec eval;
 
+    // --- Semver compatibility ---
+    /**
+     * Semver range indicating which skillhub CLI/server versions
+     * this skill is compatible with. Example: ">=1.0.0 <2.0.0"
+     */
+    private String compatibleWith;
+
+    /**
+     * If true, this skill version is deprecated and should not
+     * be installed. The deprecationMessage explains why and what
+     * to use instead.
+     */
+    private boolean deprecated;
+
+    private String deprecationMessage;
+
+    /**
+     * Fully-qualified skill names (namespace/name) that this
+     * skill supersedes. When resolving dependencies, a reference
+     * to a replaced skill should redirect to this one.
+     */
+    private List<String> replaces;
+
     // Getters/Setters
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -66,6 +89,15 @@ public class SkillManifest {
     public void setAgentPlatforms(List<String> agentPlatforms) { this.agentPlatforms = agentPlatforms; }
     public EvalSpec getEval() { return eval; }
     public void setEval(EvalSpec eval) { this.eval = eval; }
+
+    public String getCompatibleWith() { return compatibleWith; }
+    public void setCompatibleWith(String compatibleWith) { this.compatibleWith = compatibleWith; }
+    public boolean isDeprecated() { return deprecated; }
+    public void setDeprecated(boolean deprecated) { this.deprecated = deprecated; }
+    public String getDeprecationMessage() { return deprecationMessage; }
+    public void setDeprecationMessage(String deprecationMessage) { this.deprecationMessage = deprecationMessage; }
+    public List<String> getReplaces() { return replaces; }
+    public void setReplaces(List<String> replaces) { this.replaces = replaces; }
 
     // --- Inner types ---
 
