@@ -1,7 +1,5 @@
 package com.iflytek.skillhub.domain.skill.metadata;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import java.util.Map;
 
@@ -13,10 +11,7 @@ import java.util.Map;
 public class SkillManifest {
 
     // --- Core identity ---
-    @NotBlank @Pattern(regexp = "^[a-z0-9][a-z0-9._-]{1,63}$")
     private String name;
-
-    @NotBlank @Pattern(regexp = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[a-zA-Z0-9._+]+)?$")
     private String version;
 
     private String description;

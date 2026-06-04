@@ -11,6 +11,6 @@ CREATE TABLE IF NOT EXISTS hard_deprecations (
 CREATE INDEX IF NOT EXISTS idx_hard_deprecations_lookup
     ON hard_deprecations (skill_name, skill_version);
 
-ALTER TABLE skill_versions
+ALTER TABLE skill_version
     ADD COLUMN IF NOT EXISTS deprecated          BOOLEAN NOT NULL DEFAULT FALSE,
     ADD COLUMN IF NOT EXISTS deprecation_reason VARCHAR(1024);

@@ -24,9 +24,4 @@ interface JpaEvalRunRepository extends JpaRepository<EvalRun, UUID>, EvalRunRepo
             String skillName, String skillVersion);
 
     List<EvalRun> findByStatus(EvalRunStatus status);
-
-    @Override
-    default EvalRun save(EvalRun run) {
-        return JpaRepository.super.save(run);
-    }
 }

@@ -10,7 +10,7 @@ import java.util.UUID;
 public class SkillDependency {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "source_skill_name", nullable = false, length = 128)

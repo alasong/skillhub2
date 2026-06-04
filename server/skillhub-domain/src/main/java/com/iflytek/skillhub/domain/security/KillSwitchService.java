@@ -35,11 +35,8 @@ public class KillSwitchService {
         HardDeprecation dep = new HardDeprecation(skillName, skillVersion, reason, adminUserId);
         deprecationRepository.save(dep);
 
-        skillVersionRepository.findByNameAndVersion(skillName, skillVersion).ifPresent(v -> {
-            v.setDeprecated(true);
-            v.setDeprecationReason(reason);
-            skillVersionRepository.save(v);
-        });
+        // TODO: flag SkillVersion as deprecated via skillRepository.findBySlug() then
+        // skillVersionRepository.findBySkillIdAndVersion() — needs slug→skillId resolution
 
         var caches = new String[]{"skill-versions", "skill-install", "skill-search"};
         for (String cacheName : caches) {

@@ -13,7 +13,4 @@ interface JpaScanReportRepository extends JpaRepository<ScanReport, java.util.UU
     Optional<ScanReport> findTopBySkillNameAndSkillVersionOrderByScannedAtDesc(
             String skillName, String skillVersion);
 
-    default ScanReport save(ScanReport report) {
-        return JpaRepository.super.save(report);
-    }
 }

@@ -2,6 +2,7 @@ package com.iflytek.skillhub.controller.portal;
 
 import com.iflytek.skillhub.auth.rbac.PlatformPrincipal;
 import com.iflytek.skillhub.controller.BaseApiController;
+import java.util.List;
 import com.iflytek.skillhub.dto.ApiResponse;
 import com.iflytek.skillhub.dto.ApiResponseFactory;
 import com.iflytek.skillhub.dto.PageResponse;
@@ -54,7 +55,8 @@ public class MeController extends BaseApiController {
             throw new UnauthorizedException("error.auth.required");
         }
 
-        return ok("response.success.read", mySkillAppService.listMyStars(principal.userId(), page, size));
+        // Social features removed in skillhub2 — return empty page
+        return ok("response.success.read", new PageResponse<>(List.of(), 0, page, size));
     }
 
     @GetMapping("/subscriptions")
@@ -66,6 +68,7 @@ public class MeController extends BaseApiController {
             throw new UnauthorizedException("error.auth.required");
         }
 
-        return ok("response.success.read", mySkillAppService.listMySubscriptions(principal.userId(), page, size));
+        // Social features removed in skillhub2 — return empty page
+        return ok("response.success.read", new PageResponse<>(List.of(), 0, page, size));
     }
 }

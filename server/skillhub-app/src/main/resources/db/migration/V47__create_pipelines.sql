@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS skill_pipelines (
     visibility  VARCHAR(16) NOT NULL DEFAULT 'NAMESPACE_ONLY',
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    input_definitions JSONB,
     UNIQUE (namespace, name)
 );
 
@@ -44,7 +45,7 @@ CREATE TABLE IF NOT EXISTS webhook_configs (
     namespace         VARCHAR(64) NOT NULL,
     url               VARCHAR(2048) NOT NULL,
     secret_hash       VARCHAR(128),
-    events            TEXT[] NOT NULL,
+    events            TEXT NOT NULL,
     enabled           BOOLEAN NOT NULL DEFAULT TRUE,
     created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
     last_delivered_at TIMESTAMPTZ,

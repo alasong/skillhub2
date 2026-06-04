@@ -16,9 +16,4 @@ import java.util.UUID;
 interface JpaEvalCaseResultRepository extends JpaRepository<EvalCaseResult, UUID>, EvalCaseResultRepository {
 
     List<EvalCaseResult> findByEvalRunId(UUID evalRunId);
-
-    @Override
-    default EvalCaseResult save(EvalCaseResult result) {
-        return JpaRepository.super.save(result);
-    }
 }
