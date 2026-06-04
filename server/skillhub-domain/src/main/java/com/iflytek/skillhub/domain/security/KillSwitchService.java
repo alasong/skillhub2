@@ -1,10 +1,10 @@
 package com.iflytek.skillhub.domain.security;
 
-import com.iflytek.skillhub.domain.skill.SkillVersion;
 import com.iflytek.skillhub.domain.skill.SkillVersionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +19,7 @@ public class KillSwitchService {
 
     public KillSwitchService(HardDeprecationRepository deprecationRepository,
                              SkillVersionRepository skillVersionRepository,
-                             CacheManager cacheManager) {
+                             @Nullable CacheManager cacheManager) {
         this.deprecationRepository = deprecationRepository;
         this.skillVersionRepository = skillVersionRepository;
         this.cacheManager = cacheManager;
@@ -38,11 +38,13 @@ public class KillSwitchService {
         // TODO: flag SkillVersion as deprecated via skillRepository.findBySlug() then
         // skillVersionRepository.findBySkillIdAndVersion() — needs slug→skillId resolution
 
-        var caches = new String[]{"skill-versions", "skill-install", "skill-search"};
-        for (String cacheName : caches) {
-            var cache = cacheManager.getCache(cacheName);
-            if (cache != null) {
-                cache.evict(skillName + ":" + skillVersion);
+        if (cacheManager != null) {
+            var caches = new String[]{"skill-versions", "skill-install", "skill-search"};
+            for (String cacheName : caches) {
+                var cache = cacheManager.getCache(cacheName);
+                if (cache != null) {
+                    cache.evict(skillName + ":" + skillVersion);
+                }
             }
         }
 

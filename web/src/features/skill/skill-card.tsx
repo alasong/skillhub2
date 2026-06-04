@@ -1,5 +1,4 @@
 import type { SkillSummary } from '@/api/types'
-import { useAuth } from '@/features/auth/use-auth'
 import { Card } from '@/shared/ui/card'
 import { NamespaceBadge } from '@/shared/components/namespace-badge'
 import { getHeadlineVersion } from '@/shared/lib/skill-lifecycle'
@@ -15,7 +14,6 @@ interface SkillCardProps {
  * Reusable card for displaying one skill in lists such as landing, namespace, search, and stars.
  */
 export function SkillCard({ skill, onClick }: SkillCardProps) {
-  const { isAuthenticated } = useAuth()
   const headlineVersion = getHeadlineVersion(skill)
   const isInteractive = typeof onClick === 'function'
 

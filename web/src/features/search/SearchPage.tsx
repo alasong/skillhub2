@@ -8,7 +8,7 @@ import { EmptyState } from '@/shared/components/empty-state'
 import { useDebounce } from '@/shared/hooks/use-debounce'
 import { APP_SHELL_PAGE_CLASS_NAME } from '@/app/page-shell-style'
 import { fetchSkills } from '@/api/skillApi'
-import type { SkillSummary, SkillSearchFilters } from '@/api/skillApi'
+import type { SkillSummary } from '@/api/skillApi'
 import { SkillCard } from '@/features/search/SkillCard'
 
 const PAGE_SIZE = 20

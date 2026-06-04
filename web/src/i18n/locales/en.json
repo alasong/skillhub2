@@ -1518,5 +1518,23 @@
       "report": "Report Notifications",
       "reportDesc": "Notify on report submission or resolution"
     }
+  },
+  "pipelines": {
+    "title": "Pipelines",
+    "description": "Skill orchestration DAGs",
+    "emptyTitle": "No pipelines yet",
+    "emptyDescription": "Create a pipeline to orchestrate multiple skills into a DAG workflow.",
+    "nodeCount": "{count} nodes",
+    "edgeCount": "{count} edges",
+    "execute": "Execute",
+    "notFound": "Pipeline not found",
+    "namespace": "Namespace",
+    "dagView": "DAG",
+    "nodes": "Nodes",
+    "edges": "Edges",
+    "metadata": "Metadata",
+    "id": "Pipeline ID",
+    "visibility": "Visibility",
+    "createdAt": "Created"
   }
 }

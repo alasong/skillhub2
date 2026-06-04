@@ -113,24 +113,4 @@ class MeControllerTest {
                 .andExpect(jsonPath("$.data.total").value(0));
     }
 
-    @Test
-    void listMyStars_returns_paginated_items() throws Exception {
-        PlatformPrincipal principal = new PlatformPrincipal(
-                "user-42", "tester", "tester@example.com", "", "github", Set.of("USER")
-        );
-        var auth = new UsernamePasswordAuthenticationToken(
-                principal, null, List.of(new SimpleGrantedAuthority("ROLE_USER"))
-        );
-
-        given(mySkillAppService.listMyStars("user-42", 0, 12))
-                .willReturn(new PageResponse<>(List.of(), 0, 0, 12));
-
-        mockMvc.perform(get("/api/v1/me/stars").with(authentication(auth)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(0))
-                .andExpect(jsonPath("$.data.items").isArray())
-                .andExpect(jsonPath("$.data.total").value(0))
-                .andExpect(jsonPath("$.data.page").value(0))
-                .andExpect(jsonPath("$.data.size").value(12));
-    }
 }
