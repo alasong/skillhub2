@@ -193,6 +193,25 @@ skillhub:
       reclaim-min-idle: ${SKILLHUB_SCAN_STREAM_RECLAIM_MIN_IDLE:PT2M}
       reclaim-batch-size: ${SKILLHUB_SCAN_STREAM_RECLAIM_BATCH_SIZE:20}
       reclaim-interval: ${SKILLHUB_SCAN_STREAM_RECLAIM_INTERVAL:PT30S}
+  security:
+    scan-gate:
+      enabled: ${SECURITY_SCAN_GATE_ENABLED:true}
+      require-passing-report: ${SECURITY_SCAN_GATE_REQUIRE_REPORT:true}
+      max-cve-critical: ${SECURITY_SCAN_GATE_MAX_CVE_CRITICAL:0}
+      max-cve-high: ${SECURITY_SCAN_GATE_MAX_CVE_HIGH:0}
+      max-sast-findings: ${SECURITY_SCAN_GATE_MAX_SAST_FINDINGS:5}
+      max-secrets: ${SECURITY_SCAN_GATE_MAX_SECRETS:0}
+    cosign:
+      fulcio-url: ${SECURITY_COSIGN_FULCIO_URL:https://fulcio.sigstore.dev}
+      rekor-url: ${SECURITY_COSIGN_REKOR_URL:https://rekor.sigstore.dev}
+      allowed-issuers: ${SECURITY_COSIGN_ALLOWED_ISSUERS:https://token.actions.githubusercontent.com}
+    kill-switch:
+      webhook-timeout-ms: ${SECURITY_KILL_SWITCH_WEBHOOK_TIMEOUT_MS:5000}
+      cache-invalidation: ${SECURITY_KILL_SWITCH_CACHE_INVALIDATION:true}
+      notify-namespace-owners: ${SECURITY_KILL_SWITCH_NOTIFY_OWNERS:true}
+    dependency:
+      conflict-resolution: ${SECURITY_DEPENDENCY_CONFLICT_RESOLUTION:strict}
+      max-transitive-depth: ${SECURITY_DEPENDENCY_MAX_TRANSITIVE_DEPTH:3}
   bootstrap:
     admin:
       enabled: ${BOOTSTRAP_ADMIN_ENABLED:false}
